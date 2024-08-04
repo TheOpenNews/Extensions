@@ -1,0 +1,10 @@
+{
+    "Extensions": [
+        {
+            "name": "S2J News",
+            "logoURL": "https://s2jnews.com/wp-content/uploads/2023/05/Logo_Main-02-300x169.png",
+            "siteURL": "https://s2jnews.com/",
+            "apk": "s2jnews-debug.apk"
+        }
+    ]
+}
