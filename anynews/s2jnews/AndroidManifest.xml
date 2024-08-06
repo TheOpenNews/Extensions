@@ -2,7 +2,7 @@
 <manifest
 xmlns:android="http://schemas.android.com/apk/res/android"
 >
-    <application>
+    <application android:icon="@mipmap/ic_launcher">
         <meta-data android:name="isAnyNewsExtension" android:value="true" />
         <meta-data android:name="className" android:value="S2JNews" />
         <meta-data android:name="name" android:value="S2J News" />
