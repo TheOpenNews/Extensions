@@ -8,6 +8,7 @@ import org.json.JSONObject
 import java.util.Arrays
 import java.util.Collections
 
+
 class S2JNews : ExtensionAbstract {
     constructor() {}
 
@@ -28,23 +29,25 @@ class S2JNews : ExtensionAbstract {
             val request = Request.Builder().url("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
                                                                                     "&per_page=" + mCount +
                                                                                     "&categories="+NewsTypeMapper[type.ordinal]).build()
-        var response : Response? = null
-        Thread {
-             response = client.newCall(request).execute()
-        }.run()
-
-        if(response == null) {
-            return  list;
-        } else if(response?.body == null) {
+        var response : Response = client.newCall(request).execute()
+        if(response.body == null) {
             return  list;
         }
 
+        var resBody : String = response.body?.string().toString();
 
-         val responseStr : StringBuilder = StringBuilder();
-        responseStr.append("{ DATA : ")
-        responseStr.append(response?.body?.string())
-        responseStr.append("}")
-        val jo : JSONObject = JSONObject(responseStr.toString());
+        // returns either a error telling me i have no more news
+        // or the list of news news
+        try {
+            // if its parsed then there is a problem
+            val tmp : JSONObject = JSONObject(resBody);
+            return list;
+        } catch(e : Exception) {}
+
+        
+        
+        
+        val jo : JSONObject = JSONObject("{DATA: $resBody }");
         val data : JSONArray = jo.getJSONArray("DATA");
         for(i in 0..data.length() - 1) {
             val newsInfo : JSONObject = data.getJSONObject(i);
@@ -60,6 +63,6 @@ class S2JNews : ExtensionAbstract {
 
 fun main() {
     val ext = S2JNews()
-    val list = ext.loadNewsHeadlines(NewsType.Politics,10,1)
+    val list = ext.loadNewsHeadlines(NewsType.Politics,10,6)
     println(list)
 }
