@@ -1,13 +1,17 @@
 package anynews.extension.s2jnews
 
+import anynews.extension.shared.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.apache.commons.text.StringEscapeUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Arrays
-import java.util.Collections
-import anynews.extension.shared.*
+import org.jsoup.*;
+import org.jsoup.helper.*;
+import org.jsoup.nodes.*;
+import org.jsoup.select.*;
 
 
 class S2JNews : ExtensionAbstract {
@@ -51,7 +55,7 @@ class S2JNews : ExtensionAbstract {
         val data : JSONArray = jo.getJSONArray("DATA");
         for(i in 0..data.length() - 1) {
             val newsInfo : JSONObject = data.getJSONObject(i);
-            val title : String = newsInfo.getJSONObject("title").getString("rendered");
+            val title : String = StringEscapeUtils.unescapeHtml3(newsInfo.getJSONObject("title").getString("rendered"));
             val date : String = newsInfo.getString("date");
             val link : String = newsInfo.getString("link");
             val imgURL : String = newsInfo.getString("jetpack_featured_media_url");
@@ -59,10 +63,63 @@ class S2JNews : ExtensionAbstract {
         }
         return  list;
     }
+
+    override fun scrapeUrl(url: String) : NewsPage{
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+        val response : Response = client.newCall(request).execute()
+
+        var header : HashMap<String,String> = HashMap()
+        var content : ArrayList<HashMap<String,String>> = ArrayList();
+
+
+        if(response.body == null) {
+            return  NewsPage(header,content);
+        }
+
+        val resBody : String = response.body?.string() as String
+        val doc: Document = Jsoup.parse(resBody)
+
+        // header
+        run {
+            val headerElem = doc.select(".td-post-header")
+            val titleElem = headerElem.select(".entry-title")
+            val authorElem = headerElem.select(".td-post-author-name a")
+            val dateElem = headerElem.select(".entry-date")
+            header.put(HEADER_TITLE,StringEscapeUtils.unescapeHtml3(titleElem.text()))
+            header.put(HEADER_AUTHOR,StringEscapeUtils.unescapeHtml3(authorElem.text()))
+            header.put(HEADER_AUTHOR_LINK,authorElem.attr("href").toString())
+            header.put(HEADER_DATE,dateElem.attr("datetime"))
+        }
+
+        // post content
+        run {
+            val imgElem =  doc.select(".td-post-featured-image a")
+            val value : HashMap<String,String> = HashMap()
+            value.put(CONTENT_IMAGE,imgElem.attr("href"))
+            content.add(value)
+
+
+            val postBodyElem =  doc.select(".td-post-content")
+            for(pElem in postBodyElem.select("p")) {
+                val value : HashMap<String,String> = HashMap()
+                val text = StringEscapeUtils.unescapeHtml3(pElem.text())
+                if(text.length == 0) continue
+                value.put(CONTENT_PARAGRAPH,text)
+                content.add(value)
+            }
+        }
+
+        return  NewsPage(header,content);
+    }
+
 }
 
 fun main() {
     val ext = S2JNews()
-    val list = ext.loadNewsHeadlines(NewsType.Politics,10,6)
-    println(list)
+//    val list = ext.loadNewsHeadlines(NewsType.Politics,10,6)
+//    println(list)
+
+  val page = ext.scrapeUrl("https://s2jnews.com/tragedy-in-gaza-as-israeli-airstrike-on-un-run-school-kills-40-innocent-palestinian-civilians/");
+    println(page.toJson())
 }
