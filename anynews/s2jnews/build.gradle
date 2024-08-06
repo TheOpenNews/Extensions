@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdk 34
 
-    namespace "anynews.extension.s2jnews"
+    namespace "anynews.extension"
     sourceSets {
         main {
             manifest.srcFile "AndroidManifest.xml"

@@ -1,4 +1,4 @@
-package anynews.extensions
+package anynews.extension.s2jnews
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -7,6 +7,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Arrays
 import java.util.Collections
+import anynews.extension.shared.*
 
 
 class S2JNews : ExtensionAbstract {
@@ -21,9 +22,9 @@ class S2JNews : ExtensionAbstract {
         }
 
         // Politics : 74
-        // General  : 79
         // Sport    : 70
-        val  NewsTypeMapper : List<Int> = Arrays.asList(74,79,70)
+        // General  : 79
+        val  NewsTypeMapper : List<Int> = Arrays.asList(74,70,79)
             val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
             val client = OkHttpClient()
             val request = Request.Builder().url("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
@@ -44,7 +45,6 @@ class S2JNews : ExtensionAbstract {
             return list;
         } catch(e : Exception) {}
 
-        
         
         
         val jo : JSONObject = JSONObject("{DATA: $resBody }");
