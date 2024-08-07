@@ -22,7 +22,11 @@ class S2JNews : ExtensionAbstract {
         categoryMap.put("Politics",74)
         categoryMap.put("Sport",70)
         categoryMap.put("General",79)
-        categories.addAll(categoryMap.keys);
+
+        categories.add("Latest")
+        categories.add("Politics")
+        categories.add("Sport")
+        categories.add("General")
     }
 
     override fun loadNewsHeadlines(type: String, count: Int, page: Int): ArrayList<NewsCard>? {
