@@ -15,27 +15,37 @@ import org.jsoup.select.*;
 
 
 class S2JNews : ExtensionAbstract {
-    constructor() {}
 
-    override fun loadNewsHeadlines(type: NewsType, count: Int, page: Int): ArrayList<NewsCard>? {
+    var categoryMap : HashMap<String,Int> = HashMap();
+    constructor() {
+        categoryMap.put("Latest",-1)
+        categoryMap.put("Politics",74)
+        categoryMap.put("Sport",70)
+        categoryMap.put("General",79)
+        categories.addAll(categoryMap.keys);
+    }
+
+    override fun loadNewsHeadlines(type: String, count: Int, page: Int): ArrayList<NewsCard>? {
         var mCount =  if (count < 1) 1 else count;
         var mPage =  if (page < 1) 1 else page;
         if (mCount > 100) {
             mPage += mCount / 100;
             mCount = 100;
         }
-        // Politics : 74
-        // Sport    : 70
-        // General  : 79
-        val  NewsTypeMapper : List<Int> = Arrays.asList(74,70,79)
-            val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
-            val client = OkHttpClient()
 
+
+        var URL : String = "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
+                "&per_page=" + mCount +
+                "&categories="+categoryMap[type];
+        if(type == "Latest") {
+            URL =  "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
+                    "&per_page=" + mCount;
+        }
+
+        val client = OkHttpClient()
         var request : Request? = null
         try {
-            request = Request.Builder().url("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
-                    "&per_page=" + mCount +
-                    "&categories="+NewsTypeMapper[type.ordinal]).build()
+            request = Request.Builder().url(URL).build()
         } catch (e : Exception) {
             return null
         }
@@ -47,6 +57,7 @@ class S2JNews : ExtensionAbstract {
 
         var resBody : String = response.body?.string().toString();
 
+        val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
         // returns either a error telling me i have no more news
         // or the list of news news
         try {

@@ -4,7 +4,7 @@
         <meta-data android:name="isAnyNewsExtension" android:value="true" />
         <meta-data android:name="className" android:value="S2JNews" />
         <meta-data android:name="name" android:value="S2J News" />
-        <meta-data android:name="logoURL" android:value="https://s2jnews.com/wp-content/uploads/2023/05/Logo_Main-02-300x169.png" />
+        <meta-data android:name="logoURL" android:value="https://github.com/AnyyNews/Extensions/raw/master/apks/s2jnews-icon.png" />
         <meta-data android:name="siteURL" android:value="https://s2jnews.com/" />
     </application>
 </manifest>
