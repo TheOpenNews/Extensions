@@ -17,26 +17,32 @@ import org.jsoup.select.*;
 class S2JNews : ExtensionAbstract {
     constructor() {}
 
-    override fun loadNewsHeadlines(type: NewsType, count: Int, page: Int): ArrayList<NewsCard> {
+    override fun loadNewsHeadlines(type: NewsType, count: Int, page: Int): ArrayList<NewsCard>? {
         var mCount =  if (count < 1) 1 else count;
         var mPage =  if (page < 1) 1 else page;
         if (mCount > 100) {
             mPage += mCount / 100;
             mCount = 100;
         }
-
         // Politics : 74
         // Sport    : 70
         // General  : 79
         val  NewsTypeMapper : List<Int> = Arrays.asList(74,70,79)
             val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
             val client = OkHttpClient()
-            val request = Request.Builder().url("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
-                                                                                    "&per_page=" + mCount +
-                                                                                    "&categories="+NewsTypeMapper[type.ordinal]).build()
+
+        var request : Request? = null
+        try {
+            request = Request.Builder().url("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
+                    "&per_page=" + mCount +
+                    "&categories="+NewsTypeMapper[type.ordinal]).build()
+        } catch (e : Exception) {
+            return null
+        }
+
         var response : Response = client.newCall(request).execute()
         if(response.body == null) {
-            return  list;
+            return  null;
         }
 
         var resBody : String = response.body?.string().toString();
@@ -64,17 +70,22 @@ class S2JNews : ExtensionAbstract {
         return  list;
     }
 
-    override fun scrapeUrl(url: String) : NewsPage{
+    override fun scrapeUrl(url: String) : NewsPage ? {
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
-        val response : Response = client.newCall(request).execute()
+        var response : Response?
+        try {
+            response  = client.newCall(request).execute()
+
+        } catch (e : Exception) {
+            return  null
+        }
 
         var header : HashMap<String,String> = HashMap()
         var content : ArrayList<HashMap<String,String>> = ArrayList();
 
-
         if(response.body == null) {
-            return  NewsPage(header,content);
+            return null
         }
 
         val resBody : String = response.body?.string() as String
@@ -116,10 +127,4 @@ class S2JNews : ExtensionAbstract {
 }
 
 fun main() {
-    val ext = S2JNews()
-//    val list = ext.loadNewsHeadlines(NewsType.Politics,10,6)
-//    println(list)
-
-  val page = ext.scrapeUrl("https://s2jnews.com/tragedy-in-gaza-as-israeli-airstrike-on-un-run-school-kills-40-innocent-palestinian-civilians/");
-    println(page.toJson())
 }
