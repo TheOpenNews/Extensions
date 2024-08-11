@@ -70,7 +70,6 @@ class TrtArabi : ExtensionAbstract {
             val date : String = o.getString("publishedDate")
             val imgURL : String = o.getString("mainImageUrl")
             val link : String = o.getString("path")
-            println(link)
             list.add(NewsCard(title, date, imgURL, link))
         }
         println(list)
