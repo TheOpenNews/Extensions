@@ -153,4 +153,3 @@ fun main() {
     // news.loadNewsHeadlines("Sport", 5, 0)
     // news.scrapeUrl("https://www.aljazeera.com/news/2024/8/6/who-is-tim-walz-kamala-harriss-vp-pick-in-us-election")
 }
-
