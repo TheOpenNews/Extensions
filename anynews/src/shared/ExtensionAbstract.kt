@@ -17,8 +17,6 @@ class NewsCard(
     var imgURL: String,
     var link: String,
     ) {
-
-
     fun toJson() : HashMap<String,Any>{
         val out : HashMap<String,Any>  = HashMap()
         out.put("title",title)
@@ -30,26 +28,88 @@ class NewsCard(
     override fun toString(): String {
         return "NewsCard(title: $title, date: $date, link: ${link.substring(0,17)}...)"
     }
-
-
 }
 
-class NewsPage(
-    var header: HashMap<String,String>,
-    var content: ArrayList<HashMap<String,String>>,
-    ) {
+
+enum class NewsDataContentType(val type : String) {
+    Paragraph("Paragraph"),
+    Header("Header"),
+    Img("Img"),
+    VidLink("VidLink"),
+}
+class NewsDataHeader {
+    var title : String = ""
+    var img : String = ""
+    var author : String = ""
+    var author_link : String = ""
+    var date : String = ""
+
 
     fun toJson() : HashMap<String,Any>{
         val out : HashMap<String,Any>  = HashMap()
-        out.put("header",header)
-        out.put("content",content)
+        out.put("title",title)
+        out.put("img",img)
+        out.put("author",author)
+        out.put("author_link",author_link)
+        out.put("date",date)
+        return  out
+    }
+
+
+    override fun toString(): String {
+        return "NewsDataHeader(title: $title)"
+    }
+}
+class NewsContentElem() {
+    lateinit var type : NewsDataContentType  
+    var metadata : HashMap<String,String> = HashMap()
+
+    fun addMeta(key : String, value : String) {
+        metadata.put(key, value)
+    }
+
+
+    fun toJson() : HashMap<String,Any>{
+        val out : HashMap<String,Any>  = HashMap()
+        out.put("type",type)
+        for(metadataKey in metadata.keys) {
+            out.put(metadataKey, metadata.get(metadataKey)!!)
+        }
+        return  out
+    }    
+
+    override fun toString(): String {
+        return "NewsContentElem(type: $type)"
+    }
+}
+class NewsData() {
+    var header : NewsDataHeader = NewsDataHeader()  
+    var content: ArrayList<NewsContentElem> = ArrayList()
+    var related : ArrayList<NewsCard> = ArrayList()
+
+    fun toJson() : HashMap<String,Any>{
+        val out : HashMap<String,Any>  = HashMap()
+        out.put("header",header.toJson())
+    
+        val jsonContent : ArrayList<HashMap<String,Any>> = ArrayList()
+        for(i in 0..content.size - 1) {
+            jsonContent.add(content[i].toJson())
+        }
+        out.put("content",jsonContent)
+    
+        val jsonRelated : ArrayList<HashMap<String,Any>> = ArrayList()
+        for(i in content.indices) { 
+            jsonRelated.add(related[i].toJson())
+        }
+        out.put("related",jsonRelated)
+    
+    
         return  out
     }
 
     override fun toString(): String {
-        return "NewsPage(header: $header)"
+        return "NewsData(header: $header ,contentSize: ${content.size} ,relatedSize: ${related.size})"
     }
-
 }
 
 
@@ -57,7 +117,7 @@ abstract class ExtensionAbstract {
     var categories : ArrayList<String> = ArrayList();
 
     abstract  fun loadNewsHeadlines(type : String, count : Int, page : Int) : ArrayList<NewsCard>?
-    abstract  fun scrapeUrl(url: String) : NewsPage?
+    abstract  fun scrapeUrl(url: String) : NewsData?
 }
 
 

@@ -100,7 +100,7 @@ class Aljazeera : ExtensionAbstract {
         return list
     }
 
-    override fun scrapeUrl(url: String): NewsPage? {
+    override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
         try {
             res  =   Aljazeera.request(url)
@@ -144,7 +144,7 @@ class Aljazeera : ExtensionAbstract {
 
             content.add(value)
         }
-        return NewsPage(header, content)
+        return NewsData(header, content)
     }
 }
 

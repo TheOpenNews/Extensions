@@ -85,7 +85,7 @@ class S2JNews : ExtensionAbstract {
         return  list;
     }
 
-    override fun scrapeUrl(url: String) : NewsPage ? {
+    override fun scrapeUrl(url: String) : NewsData ? {
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
         var response : Response?
@@ -136,7 +136,7 @@ class S2JNews : ExtensionAbstract {
             }
         }
 
-        return  NewsPage(header,content);
+        return  NewsData(header,content);
     }
 
 }

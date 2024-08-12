@@ -12,8 +12,6 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.util.ArrayList
 
-//TODO: this is the arabic website !!
-//TODO: vidio support
 class Alarabiya : ExtensionAbstract {
     var categoryToLink : HashMap<String,String> = HashMap()
     constructor() {
@@ -31,15 +29,15 @@ class Alarabiya : ExtensionAbstract {
         categories.add("Variety")
         categories.add("Latest General")
     }
-
     companion object {
         fun request(url : String) : Response? {
             val client : OkHttpClient= OkHttpClient()
             val request : Request =
                     Request.Builder()
                             .url(url)
-                            .addHeader("user-agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36,gzip(gfe)")
+                            .addHeader("user-agent", "Mozilla/5.0 (PlayStation; PlayStation 5/2.26) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15")
                             .addHeader("authority", "www.alarabiya.net")
+                            .addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
                             .build()
             val response : Response?  = client.newCall(request).execute()
             return response;
@@ -47,83 +45,95 @@ class Alarabiya : ExtensionAbstract {
     }
 
     override fun loadNewsHeadlines(type: String, count: Int, offset: Int): ArrayList<NewsCard>? {
-        // TODO: add page offset
+        var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
         val res :  Response?
         try {
-            res  = Alarabiya.request(categoryToLink.get(type)!!)
+            res  = Alarabiya.request(categoryToLink.get(type)!! + "?pageNo=${Math.max(offset, 1)}")
             if(res == null || res.body == null) {
                 return null
             }
+            val resBody : String = res.body?.string()!!
+            val doc : Document = Jsoup.parse(resBody)
+    
+            val elems : Elements = doc.select(".latest_element")
+            for(elem in elems) {
+                val title : String = elem.select(".latest_link").attr("title") 
+                val date : String =   elem.select("services caption").text()
+                val imgURL : String = elem.select(".latest_img img").attr("src")
+                val link : String = elem.select(".latest_link").attr("href") 
+                list.add(NewsCard(title, date, imgURL, link))
+            } 
         } catch(e : Exception) {
+            println("Error: " + e)
             return null
         } 
-
-        val resBody : String = res.body?.string()!!
-        val doc : Document = Jsoup.parse(resBody)
-
-        val elems : Elements = doc.select(".latest_element")
-        var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
-        for(elem in elems) {
-            val title : String = elem.select(".latest_link").attr("title") 
-            val date : String =   elem.select("services caption").text()
-            val imgURL : String = elem.select(".latest_img img").attr("src")
-            val link : String = elem.select(".latest_link").attr("href") 
-            list.add(NewsCard(title, date, imgURL, link))
-        } 
-
         return list
     }
 
-    override fun scrapeUrl(url: String): NewsPage? {
+    override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
+        var data : NewsData =  NewsData()
+
         try {
             res  = Alarabiya.request(url)
             if(res == null || res.body == null) {
                 return null
             }
+        
+            val resBody : String = res.body?.string()!!
+            val doc : Document = Jsoup.parse(resBody)
+            val body = doc.select("#body-text").first()!!
+            
+            data.header.title = doc.select(".headingInfo_title").get(0).text() 
+            data.header.date = doc.select(".timeDate_element time").get(0).attr("datetime")
+
+
+            for(elem in body.children()) {
+                val tagType = elem.tagName().toString()
+                val value : NewsContentElem = NewsContentElem()
+    
+                if(tagType == "p" && elem.text() != "") {
+                    value.type = NewsDataContentType.Paragraph
+                    value.addMeta("val", elem.text())
+                } else if (tagType.contains("h") && elem.text() != "") {
+                    value.type = NewsDataContentType.Header
+                    value.addMeta("val", elem.text())
+                } else if(tagType == "div" && elem.classNames().contains("feed-card")) {
+                    value.type = NewsDataContentType.Img
+                    value.addMeta("val", elem.select("img").attr("src"))
+                }
+                else if(tagType == "div" && elem.select("video-js").size != 0) {
+                    value.type = NewsDataContentType.VidLink
+                    value.addMeta("val", elem.select("source").get(1).attr("src"))
+                }
+
+                if(value.metadata.keys.size == 0) continue
+                println(value)
+                data.content.add(value)
+            }   
+
+            val relatedElems = doc.select(".latest .latest_element")
+            for(elem in relatedElems) {
+                data.related.add(NewsCard(
+                    elem.select(".latest_news").text(),
+                    "", // no date is provided
+                    elem.select(".latest_img img").attr("src"),
+                    elem.select(".latest_link").attr("href"),
+                ))
+            }
         } catch(e : Exception) {
+            println("Error: " + e)
             return null
         } 
 
         
-        val resBody : String = res.body?.string()!!
-        val doc : Document = Jsoup.parse(resBody)
-        val body = doc.select("#body-text").first()!!
-
-
-        var header: HashMap<String, String> = HashMap()
-        header.put(HEADER_TITLE,doc.select(".headingInfo_title").get(0).text())
-        header.put(HEADER_DATE,doc.select(".timeDate_element time").get(0).attr("datetime"))
-
-
-        var content: ArrayList<HashMap<String, String>> = ArrayList()
-        for(elem in body.children()) {
-            val tagType = elem.tagName().toString()
-            val value : HashMap<String,String> = HashMap()
-
-            if(tagType == "p" && elem.text() != "") {
-                value.put("type",CONTENT_PARAGRAPH)
-                value.put("val",elem.text())
-            } else if (tagType.contains("h") && elem.text() != "") {
-                value.put("type",CONTENT_PARAGRAPH)
-                value.put("val",elem.text())
-            } else if(tagType == "div" && elem.classNames().contains("feed-card")) {
-            value.put("type",CONTENT_IMAGE)
-            value.put("val",elem.select("img").attr("src"))
-            }
-            else {
-            } 
-
-            if(value.keys.size == 0) continue
-            content.add(value)
-        }
-        return NewsPage(header, content)
+        return data;
     }
 }
 
 fun main() {
     val ext: Alarabiya = Alarabiya()
-    // ext.loadNewsHeadlines("Latest", 0, 0)
-    println(ext.scrapeUrl("https://www.alarabiya.net/arab-and-world/2024/08/11/%D8%A7%D9%84%D9%85%D9%84%D9%83-%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87-%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A-%D8%A7%D9%84%D8%A3%D8%B1%D8%AF%D9%86-%D9%84%D9%86-%D9%8A%D9%83%D9%88%D9%86-%D8%B3%D8%A7%D8%AD%D8%A9-%D8%AD%D8%B1%D8%A8"))
+    // println(ext.loadNewsHeadlines("Latest", 0, 0))
+    println(ext.scrapeUrl("https://www.alarabiya.net/arab-and-world/2024/08/11/%D8%B1%D9%88%D8%B3%D9%8A%D8%A7-%D8%AA%D8%AA%D9%88%D8%B9%D8%AF-%D8%A3%D9%88%D9%83%D8%B1%D8%A7%D9%86%D9%8A%D8%A7-%D8%A8%D9%80-%D8%B1%D8%AF-%D9%82%D8%A7%D8%B3-%D9%84%D9%86-%D9%8A%D8%AA%D8%A3%D8%AE%D8%B1-"))
 }
 

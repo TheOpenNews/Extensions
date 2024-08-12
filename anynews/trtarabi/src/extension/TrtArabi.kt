@@ -76,7 +76,7 @@ class TrtArabi : ExtensionAbstract {
         return list
     }
 
-    override fun scrapeUrl(url: String): NewsPage? {
+    override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
         try {
             res  =   TrtArabi.request(SCRAP_PREFIX + url)
@@ -120,7 +120,7 @@ class TrtArabi : ExtensionAbstract {
             if(value.keys.size == 0) continue
             content.add(value)
         }
-        return NewsPage(header, content)
+        return NewsData(header, content)
     }
 }
 
