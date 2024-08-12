@@ -1,5 +1,5 @@
 package anynews.extension.s2jnews
-
+ 
 import anynews.extension.shared.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,6 +29,18 @@ class S2JNews : ExtensionAbstract {
         categories.add("General")
     }
 
+    companion object {
+        fun request(url : String) : Response? {
+            val client : OkHttpClient= OkHttpClient()
+            val request : Request =
+                    Request.Builder()
+                            .url(url)
+                            .build()
+            val response : Response?  = client.newCall(request).execute()
+            return response;
+        }
+    }
+
     override fun loadNewsHeadlines(type: String, count: Int, page: Int): ArrayList<NewsCard>? {
         var mCount =  if (count < 1) 1 else count;
         var mPage =  if (page < 1) 1 else page;
@@ -37,109 +49,104 @@ class S2JNews : ExtensionAbstract {
             mCount = 100;
         }
 
-
-        var URL : String = "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
-                "&per_page=" + mCount +
-                "&categories="+categoryMap[type];
-        if(type == "Latest") {
-            URL =  "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
-                    "&per_page=" + mCount;
-        }
-
-        val client = OkHttpClient()
-        var request : Request? = null
-        try {
-            request = Request.Builder().url(URL).build()
-        } catch (e : Exception) {
-            return null
-        }
-
-        var response : Response = client.newCall(request).execute()
-        if(response.body == null) {
-            return  null;
-        }
-
-        var resBody : String = response.body?.string().toString();
-
+        val res :  Response?
         val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
-        // returns either a error telling me i have no more news
-        // or the list of news news
-        try {
-            // if its parsed then there is a problem
-            val tmp : JSONObject = JSONObject(resBody);
-            return list;
-        } catch(e : Exception) {}
 
-        
-        
-        val jo : JSONObject = JSONObject("{DATA: $resBody }");
-        val data : JSONArray = jo.getJSONArray("DATA");
-        for(i in 0..data.length() - 1) {
-            val newsInfo : JSONObject = data.getJSONObject(i);
-            val title : String = StringEscapeUtils.unescapeHtml3(newsInfo.getJSONObject("title").getString("rendered"));
-            val date : String = newsInfo.getString("date");
-            val link : String = newsInfo.getString("link");
-            val imgURL : String = newsInfo.getString("jetpack_featured_media_url");
-            list.add(NewsCard(title, date, imgURL, link));
+        try {
+            var URL : String = "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage + "&per_page=" + mCount + "&categories="+categoryMap[type];
+            if(type == "Latest") {
+                URL =  "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
+                        "&per_page=" + mCount;
+            }            
+            res  =   S2JNews.request(URL)
+            if(res == null || res.body == null) {
+                return null
+            }        
+
+            var resBody : String = res.body?.string().toString();
+            try {
+                // if its parsed then there is a problem, its the server returning a error 
+                JSONObject(resBody);
+                return list;
+            } catch(e : Exception) { }
+
+            val jo : JSONObject = JSONObject("{DATA: $resBody }");
+            val data : JSONArray = jo.getJSONArray("DATA");
+            for(i in 0..data.length() - 1) {
+                val newsInfo : JSONObject = data.getJSONObject(i);
+                val title : String = StringEscapeUtils.unescapeHtml3(newsInfo.getJSONObject("title").getString("rendered"));
+                val date : String = newsInfo.getString("date");
+                val link : String = newsInfo.getString("link");
+                val imgURL : String = newsInfo.getString("jetpack_featured_media_url");
+                list.add(NewsCard(title, date, imgURL, link));
+            }
+        }        
+        catch(e : Exception) { 
+            println("Error: " + e)
         }
+        
         return  list;
     }
 
     override fun scrapeUrl(url: String) : NewsData ? {
-        val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-        var response : Response?
+        val res :  Response?
+        val data : NewsData = NewsData()
         try {
-            response  = client.newCall(request).execute()
+            res  =   S2JNews.request(url)
+            if(res == null || res.body == null) {
+                return null
+            }
 
-        } catch (e : Exception) {
-            return  null
-        }
-
-        var header : HashMap<String,String> = HashMap()
-        var content : ArrayList<HashMap<String,String>> = ArrayList();
-
-        if(response.body == null) {
-            return null
-        }
-
-        val resBody : String = response.body?.string() as String
-        val doc: Document = Jsoup.parse(resBody)
-
-        // header
-        run {
+            val resBody : String = res.body?.string()!!
+            val doc: Document = Jsoup.parse(resBody)
+            
             val headerElem = doc.select(".td-post-header")
-            val titleElem = headerElem.select(".entry-title")
-            val authorElem = headerElem.select(".td-post-author-name a")
-            val dateElem = headerElem.select(".entry-date")
-            header.put(HEADER_TITLE,StringEscapeUtils.unescapeHtml3(titleElem.text()))
-            header.put(HEADER_AUTHOR,StringEscapeUtils.unescapeHtml3(authorElem.text()))
-            header.put(HEADER_AUTHOR_LINK,authorElem.attr("href").toString())
-            header.put(HEADER_DATE,dateElem.attr("datetime"))
-        }
-
-        // post content
-        run {
-            val imgElem =  doc.select(".td-post-featured-image a")
-            val value : HashMap<String,String> = HashMap()
-            value.put(CONTENT_IMAGE,imgElem.attr("href"))
-            content.add(value)
-
+            data.header.title =  StringEscapeUtils.unescapeHtml3(headerElem.select(".entry-title").text())
+            data.header.author =  StringEscapeUtils.unescapeHtml3(headerElem.select(".td-post-author-name a").text())
+            data.header.author_link =   headerElem.select(".td-post-author-name a").attr("href").toString()
+            data.header.date =  headerElem.select(".entry-date").attr("datetime")
+            data.header.img =   doc.select(".td-post-featured-image a").attr("href")
 
             val postBodyElem =  doc.select(".td-post-content")
-            for(pElem in postBodyElem.select("p")) {
-                val value : HashMap<String,String> = HashMap()
-                val text = StringEscapeUtils.unescapeHtml3(pElem.text())
-                if(text.length == 0) continue
-                value.put(CONTENT_PARAGRAPH,text)
-                content.add(value)
-            }
-        }
+            var contentArea = false
+            for(elem in postBodyElem.get(0).children()) {
+                if(!contentArea) {
+                    if(elem.hasClass("rt-reading-time")) {
+                        contentArea = true;
+                    } 
+                    continue
+                }
+                val tagType = elem.tagName()
+                val contentElem : NewsContentElem = NewsContentElem()
 
-        return  NewsData(header,content);
+                if(tagType == "p" && elem.text().length != 0) {
+                    contentElem.type = NewsDataContentType.Paragraph
+                    contentElem.addMeta("val", elem.text())
+                } else if(tagType == "div" && elem.select("img").size != 0) {
+                    contentElem.type = NewsDataContentType.Img
+                    contentElem.addMeta("val", elem.select("img").attr("src"))
+                }
+
+                if(contentElem.metadata.keys.size == 0) continue
+                data.content.add(contentElem)
+            }            
+
+            for(elem in doc.select(".td-related-span4")) {
+                data.related.add(NewsCard(StringEscapeUtils.unescapeHtml3(elem.select(".entry-title.td-module-title").text()), "", doc.select(".td-module-thumb a").get(0).attr("href"), elem.select(".entry-title.td-module-title").attr("href")))
+            }
+
+        } catch(e : Exception) {
+            println("Error: " + e)
+            return null
+        } 
+
+        return  data;
     }
 
 }
 
 fun main() {
+    // val ext : S2JNews = S2JNews()
+    // println(ext.loadNewsHeadlines("Politics", 10, 0))
+    // println(ext.scrapeUrl("https://s2jnews.com/delta-airlines-apologizes-for-offensive-tweet-about-palestinian-flag-but-its-retraction-statement-is-not-any-better/"))
 }

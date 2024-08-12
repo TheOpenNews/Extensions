@@ -86,7 +86,7 @@ class Alarabiya : ExtensionAbstract {
             
             data.header.title = doc.select(".headingInfo_title").get(0).text() 
             data.header.date = doc.select(".timeDate_element time").get(0).attr("datetime")
-
+            data.header.img = doc.select(".article-hero-img picture source").get(0).attr("srcset")
 
             for(elem in body.children()) {
                 val tagType = elem.tagName().toString()

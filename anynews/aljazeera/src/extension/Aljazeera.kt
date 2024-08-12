@@ -113,7 +113,6 @@ class Aljazeera : ExtensionAbstract {
 
         val resBody : String = res.body!!.string()
         val doc :  Elements =  Jsoup.parse(resBody).select("#root main")
-        print(doc.select("#root main"))
 
 
         var header: HashMap<String, String> = HashMap()
