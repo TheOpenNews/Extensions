@@ -13,20 +13,10 @@ import org.json.JSONArray
 import java.util.ArrayList
 
 
-// TODO:
-// add support for content header
-// add support for content video
-// add support recommended headlines
-
-// scrape home page
 class Aljazeera : ExtensionAbstract {
     var categoryMap: HashMap<String, (Int, Int) -> String> = HashMap()
     val ALJAZEERA_LINK : String = "https://www.aljazeera.com"
     constructor() {
-        // the api sucks
-        // i hardocde tags and urls for know
-        // maybe there is a smarter solution using webview bs
-        // but not now
         categoryMap.put("Israel palestine conflict",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"israel-palestine-conflict\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
         categoryMap.put("US election",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-election-2024\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
         categoryMap.put("Sport",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"sports\",\"categoryType\":\"categories\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
@@ -116,6 +106,7 @@ class Aljazeera : ExtensionAbstract {
             data.header.author = doc.select(".author-link").text()
             data.header.author_link = ALJAZEERA_LINK + doc.select(".author-link").attr("href")
             data.header.date =  doc.select(".date-simple span").get(1).text()
+            data.header.img =  ALJAZEERA_LINK + doc.select(".article-featured-image img").get(0).attr("src")
     
             val newsElem = doc.select(".wysiwyg").first()
             for(elem in newsElem!!.children()) {

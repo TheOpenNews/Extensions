@@ -50,83 +50,92 @@ class TrtArabi : ExtensionAbstract {
 
     override fun loadNewsHeadlines(type: String, count: Int, offset: Int): ArrayList<NewsCard>? {
         val res :  Response?
-        try {
+            var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
+            try {
             res  = TrtArabi.request(TrtArabi.wrapTypeWithURL(type,count,offset))
             if(res == null || res.body == null) {
                 return null
             }
+            val resBody : String = res.body!!.string()
+            val jo : JSONObject = JSONObject(resBody);
+            val articles : JSONArray =  jo.getJSONObject("news").getJSONArray("contents")
+            
+            for(i in 0..articles.length() - 1) {
+                val o : JSONObject = articles.getJSONObject(i)
+                val title : String = o.getString("title")
+                val date : String = o.getString("publishedDate")
+                val imgURL : String = o.getString("mainImageUrl")
+                val link : String = o.getString("path")
+                list.add(NewsCard(title, date, imgURL, link))
+            }            
         } catch(e : Exception) {
             return null
         } 
-
-        val resBody : String = res.body!!.string()
-        val jo : JSONObject = JSONObject(resBody);
-        val articles : JSONArray =  jo.getJSONObject("news").getJSONArray("contents")
-        var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
-        
-        for(i in 0..articles.length() - 1) {
-            val o : JSONObject = articles.getJSONObject(i)
-            val title : String = o.getString("title")
-            val date : String = o.getString("publishedDate")
-            val imgURL : String = o.getString("mainImageUrl")
-            val link : String = o.getString("path")
-            list.add(NewsCard(title, date, imgURL, link))
-        }
-        println(list)
         return list
     }
 
     override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
+        val data :  NewsData= NewsData()
         try {
             res  =   TrtArabi.request(SCRAP_PREFIX + url)
             if(res == null || res.body == null) {
                 return null
             }
-        } catch(e : Exception) {
-            return null
-        } 
-        //NOTE: there is a related thingy you can get data from it for related output
 
-        val resBody : String = res.body!!.string()
-        val jo : JSONObject = JSONObject(resBody);
-        val data = jo.getJSONObject("content")
-        
-        var header: HashMap<String, String> = HashMap()
-        header.put(HEADER_TITLE,data.getString("title"))
-        header.put(HEADER_AUTHOR_LINK, TRTARABI_NEWS + data.getJSONObject("fields").getJSONArray("authors").getJSONObject(0).getString("path"))
-        header.put(HEADER_DATE,data.getJSONObject("published").getString("date"))
-        header.put(HEADER_AUTHOR,  { 
-                val author = data.getJSONObject("fields").getJSONArray("authors").getJSONObject(0)
+            val resBody : String = res.body!!.string()
+            val jo : JSONObject = JSONObject(resBody);
+            val content = jo.getJSONObject("content")
+    
+
+        data.header.title =  content.getString("title")
+        data.header.author_link =   TRTARABI_NEWS + content.getJSONObject("fields").getJSONArray("authors").getJSONObject(0).getString("path")
+        data.header.date =  content.getJSONObject("published").getString("date")
+        data.header.img = content.getJSONObject("fields").getJSONObject("mainImage").getString("url")
+        data.header.author =    { 
+                val author = content.getJSONObject("fields").getJSONArray("authors").getJSONObject(0)
                 author.getString("firstName") + " " + author.getString("lastName") 
             }()
-        )
-        val HEADER_IMG = data.getJSONObject("fields").getJSONObject("mainImage").getString("url")
         
-        var content: ArrayList<HashMap<String, String>> = ArrayList()
-        val body = data.getJSONArray("body")
+        val body = content.getJSONArray("body")
 
         for(i in 0..body.length() - 1) {
             val elem = body.getJSONObject(i)
+            val value : NewsContentElem = NewsContentElem()
 
-            val value : HashMap<String,String> = HashMap()
             if(elem.getString("blockType") == "text") {
-                value.put("type",CONTENT_PARAGRAPH)
-                value.put("val",Jsoup.parse(elem.getString("value")).text())
+                value.type = NewsDataContentType.Paragraph
+                value.addMeta("val", Jsoup.parse(elem.getString("value")).text())
             } else if(elem.getString("blockType") == "youtube") {
-                value.put("type","video")
-                value.put("val",elem.getJSONObject("metadata").getString("url"))
+                value.type = NewsDataContentType.VidLink
+                value.addMeta("val", elem.getJSONObject("metadata").getString("url"))
             }
-            if(value.keys.size == 0) continue
-            content.add(value)
+            if(value.metadata.keys.size == 0) continue
+            data.content.add(value)
         }
-        return NewsData(header, content)
+
+
+        val related  = jo.getJSONArray("related")
+        for(i in 0..related.length()-1) {
+            val o = related.getJSONObject(i)
+            val title : String = o.getString("title")
+            val date : String = o.getString("publishedDate")
+            val imgURL : String = o.getString("mainImageUrl")
+            val link : String = o.getString("path")
+            data.related.add(NewsCard(title, date, imgURL, link))            
+        }
+
+    } catch(e : Exception) {
+        return null
+    } 
+
+        return data
     }
 }
 
 fun main() {
     val ext: TrtArabi = TrtArabi()
     // ext.loadNewsHeadlines("explainers", 5, 0)
-    // ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838")
+    println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
 }
 
