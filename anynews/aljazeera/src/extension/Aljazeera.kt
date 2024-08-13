@@ -72,83 +72,100 @@ class Aljazeera : ExtensionAbstract {
 
     override fun loadNewsHeadlines(type: String, count: Int, page: Int): ArrayList<NewsCard>? {
         val res :  Response?
+        var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
         try {
-            // the api doesnt use page system but a offset system, so i just get the next page using the count
-            // wont work if count is a dynamic number
-            // but i use a constant in the app so no worries
             res  =   Aljazeera.request(categoryMap.get(type)!!(count,count * page))
             if(res == null || res.body == null) {
                 return null
             }
+
+            val resBody : String = res.body!!.string()
+            val jo : JSONObject = JSONObject(resBody);
+            val articles : JSONArray =  jo.getJSONObject("data").getJSONArray("articles")
+            for(i in 0..articles.length() - 1) {
+                val o : JSONObject = articles.getJSONObject(i)
+                val title : String = o.getString("title")
+                val date : String = o.getString("date")
+                val imgURL : String = ALJAZEERA_LINK + o.getJSONObject("featuredImage").getString("sourceUrl")
+                val link : String = ALJAZEERA_LINK + o.getString("link")
+                val description : String = o.getString("replacementHeadline")
+                list.add(NewsCard(title, date, imgURL, link))
+            }
+    
         } catch(e : Exception) {
             return null
         } 
-
-        val resBody : String = res.body!!.string()
-        val jo : JSONObject = JSONObject(resBody);
-        val articles : JSONArray =  jo.getJSONObject("data").getJSONArray("articles")
-        var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
-        for(i in 0..articles.length() - 1) {
-            val o : JSONObject = articles.getJSONObject(i)
-            val title : String = o.getString("title")
-            val date : String = o.getString("date")
-            val imgURL : String = ALJAZEERA_LINK + o.getJSONObject("featuredImage").getString("sourceUrl")
-            val link : String = ALJAZEERA_LINK + o.getString("link")
-            list.add(NewsCard(title, date, imgURL, link))
-        }
-
         return list
     }
 
     override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
+        var data : NewsData =  NewsData()
+
         try {
             res  =   Aljazeera.request(url)
             if(res == null || res.body == null) {
                 return null
             }
+
+            val resBody : String = res.body?.string()!!
+            val doc :  Elements =  Jsoup.parse(resBody).select("#root main")
+
+
+            data.header.title =  doc.select("header h1").text()
+            data.header.author = doc.select(".author-link").text()
+            data.header.author_link = ALJAZEERA_LINK + doc.select(".author-link").attr("href")
+            data.header.date =  doc.select(".date-simple span").get(1).text()
+    
+            val newsElem = doc.select(".wysiwyg").first()
+            for(elem in newsElem!!.children()) {
+                val tagType = elem.tag().toString() 
+                val value : NewsContentElem = NewsContentElem()
+                if(tagType == "p" && elem.text() != "") {
+                    value.type = NewsDataContentType.Paragraph
+                    value.addMeta("val",elem.text())
+                } else if (tagType.contains("h") && elem.text() != "") {
+                    value.type = NewsDataContentType.Header
+                    value.addMeta("val",elem.text())
+                } else if(tagType == "figure") {
+                    value.type = NewsDataContentType.Img
+                    value.addMeta("val",ALJAZEERA_LINK +  elem.select("img").attr("src"))
+                    value.addMeta("caption",ALJAZEERA_LINK +  elem.select("img").attr("src"))
+                    value.addMeta("caption",elem.select("figcaption").text())
+                } 
+    
+                if(value.metadata.keys.size == 0) continue
+                data.content.add(value)
+            }
+
+            try {
+                val res  =  Aljazeera.request("https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoMoreFromTopic&variables={\"allPostTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"trendingCategory\":\"\",\"category\":\"news\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"currentPostType\":[\"post\"]}")
+                val jo  = JSONObject(res!!.body!!.string())
+                val arr = jo.optJSONObject("data").getJSONArray("mostRecent")
+                for(i in 0..arr.length()-1) {
+                    val title : String = arr.getJSONObject(i).getString("title")
+                    // val date : String = arr.getJSONObject(i).getString("date")
+                    val imgURL : String = ALJAZEERA_LINK + arr.getJSONObject(i).getJSONObject("featuredImage").getString("sourceUrl")
+                    val link : String = ALJAZEERA_LINK + arr.getJSONObject(i).getString("link")
+                    val description : String = arr.getJSONObject(i).getString("replacementHeadline")
+
+                    data.related.add(NewsCard(title, "", imgURL, link))
+                }                
+            } catch(e : Exception) {
+                println("Error: " + e)
+            }
         } catch(e : Exception) {
-            return null
+                println("Error: " + e)
+                return null
         } 
 
-        val resBody : String = res.body!!.string()
-        val doc :  Elements =  Jsoup.parse(resBody).select("#root main")
 
-
-        var header: HashMap<String, String> = HashMap()
-        var content: ArrayList<HashMap<String, String>> = ArrayList()
-        header.put(HEADER_TITLE,doc.select("header h1").text())
-        header.put(HEADER_AUTHOR,doc.select(".author-link").text())
-        header.put(HEADER_AUTHOR_LINK,ALJAZEERA_LINK + doc.select(".author-link").attr("href"))
-        header.put(HEADER_DATE,doc.select(".date-simple span").get(1).text())
-
-        val newsElem = doc.select(".wysiwyg").first()
-        
-        for(elem in newsElem!!.children()) {
-            val tagType = elem.tag().toString() 
-            val value : HashMap<String,String> = HashMap()
-            if(tagType == "p" && elem.text() != "") {
-                value.put("type",CONTENT_PARAGRAPH)
-                value.put("val",elem.text())
-            } else if (tagType.contains("h") && elem.text() != "") {
-                value.put("type",CONTENT_PARAGRAPH)
-                value.put("val",elem.text())
-            } else if(tagType == "figure") {
-                value.put("type",CONTENT_IMAGE)
-                value.put("val",ALJAZEERA_LINK +  elem.select("img").attr("src"))
-                value.put("caption",elem.select("figcaption").text())
-            } 
-
-            if(value.keys.size == 0) continue
-
-            content.add(value)
-        }
-        return NewsData(header, content)
+        return data
     }
 }
 
 fun main() {
     val news: Aljazeera = Aljazeera()
     // news.loadNewsHeadlines("Sport", 5, 0)
-    // news.scrapeUrl("https://www.aljazeera.com/news/2024/8/6/who-is-tim-walz-kamala-harriss-vp-pick-in-us-election")
+    println(news.scrapeUrl("https://www.aljazeera.com/news/2024/8/6/who-is-tim-walz-kamala-harriss-vp-pick-in-us-election"))
 }
