@@ -4,7 +4,7 @@
             "name": "S2JNews",
             "logoURL": "",
             "siteURL": "https://s2jnews.com/",
-            "apk": "onews-alarabiya-debug.apk",
+            "apk": "onews-s2jnews-debug.apk",
             "version": "1.0.0"
         },
         {
@@ -25,7 +25,7 @@
             "name": "Aljazeera",
             "logoURL": "",
             "siteURL": "https://www.aljazeera.com/",
-            "apk": "onews-alarabiya-debug.apk",
+            "apk": "onews-aljazeera-debug.apk",
             "version": "1.0.0"
         }                
 
