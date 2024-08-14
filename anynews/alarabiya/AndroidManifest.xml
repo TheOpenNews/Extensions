@@ -2,6 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:icon="@mipmap/ic_launcher">
         <meta-data android:name="onews-extension" android:value="true" />
-        <meta-data android:name="class-name" android:value="S2JNews" />
+        <meta-data android:name="class-name" android:value="Alarabiya" />
     </application>
 </manifest>

@@ -1,10 +1,33 @@
 {
     "Extensions": [
         {
-            "name": "S2J News",
-            "logoURL": "https://github.com/AnyyNews/Extensions/raw/master/apks/s2jnews-icon.png",
+            "name": "S2JNews",
+            "logoURL": "",
             "siteURL": "https://s2jnews.com/",
-            "apk": "s2jnews-debug.apk"
-        }
+            "apk": "onews-alarabiya-debug.apk",
+            "version": "1.0.0"
+        },
+        {
+            "name": "TrtArabi",
+            "logoURL": "",
+            "siteURL": "https://www.trtarabi.com/",
+            "apk": "onews-trtarabi-debug.apk",
+            "version": "1.0.0"
+        },
+        {
+            "name": "Alarabiya",
+            "logoURL": "",
+            "siteURL": "https://www.alarabiya.net/",
+            "apk": "onews-alarabiya-debug.apk",
+            "version": "1.0.0"
+        },
+        {
+            "name": "Aljazeera",
+            "logoURL": "",
+            "siteURL": "https://www.aljazeera.com/",
+            "apk": "onews-alarabiya-debug.apk",
+            "version": "1.0.0"
+        }                
+
     ]
 }

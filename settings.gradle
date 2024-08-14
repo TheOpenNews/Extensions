@@ -12,5 +12,10 @@ plugins {
 }
 
 
+
+
+include ":anynews:alarabiya"
+include ":anynews:aljazeera"
+include ":anynews:trtarabi"
 include ":anynews:s2jnews"
 include ":anynews:shared"

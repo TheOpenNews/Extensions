@@ -1,4 +1,6 @@
 package anynews.extension.shared
+import java.util.ArrayList; 
+import java.util.HashMap; 
 
 
 
@@ -26,7 +28,7 @@ class NewsCard(
         return  out
     }
     override fun toString(): String {
-        return "NewsCard(title: $title, date: $date, link: ${link.substring(0,17)}...)"
+        return "NewsCard(title: $title, date: $date, link: ${link}...)"
     }
 }
 
@@ -98,7 +100,7 @@ class NewsData() {
         out.put("content",jsonContent)
     
         val jsonRelated : ArrayList<HashMap<String,Any>> = ArrayList()
-        for(i in content.indices) { 
+        for(i in 0..content.size-1) { 
             jsonRelated.add(related[i].toJson())
         }
         out.put("related",jsonRelated)
