@@ -73,7 +73,7 @@ class NewsContentElem() {
 
     fun toJson() : HashMap<String,Any>{
         val out : HashMap<String,Any>  = HashMap()
-        out.put("type",type.toString())
+        out.put("type",type.name)
         for(metadataKey in metadata.keys) {
             out.put(metadataKey, metadata.get(metadataKey)!!)
         }
