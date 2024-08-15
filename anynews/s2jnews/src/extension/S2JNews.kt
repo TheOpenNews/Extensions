@@ -140,6 +140,7 @@ class S2JNews : ExtensionAbstract {
             return null
         } 
 
+
         return  data;
     }
 

@@ -100,7 +100,7 @@ class NewsData() {
         out.put("content",jsonContent)
     
         val jsonRelated : ArrayList<HashMap<String,Any>> = ArrayList()
-        for(i in 0..content.size-1) { 
+        for(i in 0..related.size-1) { 
             jsonRelated.add(related[i].toJson())
         }
         out.put("related",jsonRelated)
