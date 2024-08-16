@@ -117,6 +117,8 @@ class NewsData() {
 
 abstract class ExtensionAbstract {
     var categories : ArrayList<String> = ArrayList();
+    var version : String = "1.0.0";
+    var iconLink : String = "placeholder.png";
 
     abstract  fun loadNewsHeadlines(type : String, count : Int, page : Int) : ArrayList<NewsCard>?
     abstract  fun scrapeUrl(url: String) : NewsData?

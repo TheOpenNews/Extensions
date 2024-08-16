@@ -23,6 +23,8 @@ class TrtArabi : ExtensionAbstract {
     val TRTARABI_NEWS : String = "https://www.trtarabi.com/"
     val SCRAP_PREFIX : String = "https://www.trtarabi.com/api/content?path="
     constructor() {
+        iconLink = "trtarabi.jpg";
+
         categories.add("now")
         categories.add("explainers")
         categories.add("issues")

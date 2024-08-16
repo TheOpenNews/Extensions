@@ -18,6 +18,9 @@ class S2JNews : ExtensionAbstract {
 
     var categoryMap : HashMap<String,Int> = HashMap();
     constructor() {
+        iconLink = "s2jnews.png";
+
+
         categoryMap.put("Latest",-1)
         categoryMap.put("Politics",74)
         categoryMap.put("Sport",70)

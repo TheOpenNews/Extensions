@@ -15,6 +15,9 @@ import java.util.ArrayList
 class Alarabiya : ExtensionAbstract {
     var categoryToLink : HashMap<String,String> = HashMap()
     constructor() {
+        iconLink = "alarabiya.jpg";
+
+
         categoryToLink.put("Latest", "https://www.alarabiya.net/latest-news/archive")
         categoryToLink.put("Saudi Today", "https://www.alarabiya.net/saudi-today/archive")
         categoryToLink.put("Aswaq", "https://www.alarabiya.net/aswaq/archive")

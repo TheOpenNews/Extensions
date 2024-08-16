@@ -17,6 +17,9 @@ class Aljazeera : ExtensionAbstract {
     var categoryMap: HashMap<String, (Int, Int) -> String> = HashMap()
     val ALJAZEERA_LINK : String = "https://www.aljazeera.com"
     constructor() {
+        iconLink = "aljazeera.png";
+
+
         categoryMap.put("Israel palestine conflict",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"israel-palestine-conflict\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
         categoryMap.put("US election",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-election-2024\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
         categoryMap.put("Sport",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"sports\",\"categoryType\":\"categories\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
