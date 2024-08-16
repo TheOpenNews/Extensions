@@ -2,7 +2,7 @@
     "Extensions": [
         {
             "name": "S2JNews",
-            "logoURL": "",
+            "logoURL": "s2jnews.png",
             "siteURL": "https://s2jnews.com/",
             "apk": "onews-s2jnews-debug.apk",
             "version": "1.0.0"
