@@ -9,21 +9,21 @@
         },
         {
             "name": "TrtArabi",
-            "logoURL": "",
+            "logoURL": "s2jnews.png",
             "siteURL": "https://www.trtarabi.com/",
             "apk": "onews-trtarabi-debug.apk",
             "version": "1.0.0"
         },
         {
             "name": "Alarabiya",
-            "logoURL": "",
+            "logoURL": "s2jnews.png",
             "siteURL": "https://www.alarabiya.net/",
             "apk": "onews-alarabiya-debug.apk",
             "version": "1.0.0"
         },
         {
             "name": "Aljazeera",
-            "logoURL": "",
+            "logoURL": "s2jnews.png",
             "siteURL": "https://www.aljazeera.com/",
             "apk": "onews-aljazeera-debug.apk",
             "version": "1.0.0"
