@@ -20,13 +20,10 @@ class S2JNews : ExtensionAbstract {
     constructor() {
         iconLink = "s2jnews.png";
 
-
-        categoryMap.put("Latest",-1)
         categoryMap.put("Politics",74)
         categoryMap.put("Sport",70)
         categoryMap.put("General",79)
 
-        categories.add("Latest")
         categories.add("Politics")
         categories.add("Sport")
         categories.add("General")
@@ -56,12 +53,7 @@ class S2JNews : ExtensionAbstract {
         val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
 
         try {
-            var URL : String = "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage + "&per_page=" + mCount + "&categories="+categoryMap[type];
-            if(type == "Latest") {
-                URL =  "https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage +
-                        "&per_page=" + mCount;
-            }            
-            res  =   S2JNews.request(URL)
+            res  =   S2JNews.request("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage + "&per_page=" + mCount + "&categories="+categoryMap[type])
             if(res == null || res.body == null) {
                 return null
             }        
@@ -143,14 +135,49 @@ class S2JNews : ExtensionAbstract {
             return null
         } 
 
-
         return  data;
     }
 
+
+    override fun scrapeHomePage() : ArrayList<NewsCard>? { 
+        val res :  Response?
+        val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
+
+        try {
+            res  =   S2JNews.request("https://s2jnews.com/wp-json/wp/v2/posts")
+            if(res == null || res.body == null) {
+                return null
+            }        
+
+            var resBody : String = res.body?.string().toString();
+            try {
+                // if its parsed then there is a problem, its the server returning a error 
+                JSONObject(resBody);
+                return list;
+            } catch(e : Exception) { }
+
+            val jo : JSONObject = JSONObject("{DATA: $resBody }");
+            val data : JSONArray = jo.getJSONArray("DATA");
+            for(i in 0..data.length() - 1) {
+                val newsInfo : JSONObject = data.getJSONObject(i);
+                val title : String = StringEscapeUtils.unescapeHtml3(newsInfo.getJSONObject("title").getString("rendered"));
+                val date : String = newsInfo.getString("date");
+                val link : String = newsInfo.getString("link");
+                val imgURL : String = newsInfo.getString("jetpack_featured_media_url");
+                list.add(NewsCard(title, date, imgURL, link));
+            }
+        }        
+        catch(e : Exception) { 
+            println("Error: " + e)
+        }
+        return  list;
+    }
+        
 }
 
 fun main() {
-    // val ext : S2JNews = S2JNews()
+    val ext : S2JNews = S2JNews()
     // println(ext.loadNewsHeadlines("Politics", 10, 0))
     // println(ext.scrapeUrl("https://s2jnews.com/delta-airlines-apologizes-for-offensive-tweet-about-palestinian-flag-but-its-retraction-statement-is-not-any-better/"))
+    // println(ext.scrapeHomePage())
 }

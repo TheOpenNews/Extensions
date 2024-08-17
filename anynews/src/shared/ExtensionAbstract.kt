@@ -121,6 +121,9 @@ abstract class ExtensionAbstract {
     var iconLink : String = "placeholder.png";
 
     abstract  fun loadNewsHeadlines(type : String, count : Int, page : Int) : ArrayList<NewsCard>?
+    open fun scrapeHomePage() :  ArrayList<NewsCard>? {
+        return ArrayList();
+    }
     abstract  fun scrapeUrl(url: String) : NewsData?
 }
 
