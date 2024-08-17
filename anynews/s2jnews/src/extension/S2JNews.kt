@@ -8,14 +8,15 @@ import org.apache.commons.text.StringEscapeUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Arrays
+import java.security.cert.Extension
 import org.jsoup.*;
 import org.jsoup.helper.*;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 
 
-class S2JNews : ExtensionAbstract {
 
+class S2JNews : ExtensionAbstract {
     var categoryMap : HashMap<String,Int> = HashMap();
     constructor() {
         iconLink = "s2jnews.png";
@@ -28,7 +29,6 @@ class S2JNews : ExtensionAbstract {
         categories.add("Sport")
         categories.add("General")
     }
-
     companion object {
         fun request(url : String) : Response? {
             val client : OkHttpClient= OkHttpClient()
@@ -42,27 +42,37 @@ class S2JNews : ExtensionAbstract {
     }
 
     override fun loadNewsHeadlines(type: String, count: Int, page: Int): ArrayList<NewsCard>? {
-        var mCount =  if (count < 1) 1 else count;
-        var mPage =  if (page < 1) 1 else page;
-        if (mCount > 100) {
-            mPage += mCount / 100;
-            mCount = 100;
-        }
-
         val res :  Response?
         val list: ArrayList<NewsCard> = ArrayList<NewsCard>()
 
         try {
+            var mCount =  if (count < 1) 1 else count;
+            var mPage =  if (page < 1) 1 else page;
+            if (mCount > 100) {
+                mPage += mCount / 100;
+                mCount = 100;
+            }
+    
             res  =   S2JNews.request("https://s2jnews.com/wp-json/wp/v2/posts?page=" + mPage + "&per_page=" + mCount + "&categories="+categoryMap[type])
             if(res == null || res.body == null) {
+                errorHanlder.msg = "Network Error"
+                errorHanlder.type = ErrorType.Network
                 return null
             }        
 
             var resBody : String = res.body?.string().toString();
             try {
-                // if its parsed then there is a problem, its the server returning a error 
-                JSONObject(resBody);
-                return list;
+                // expected structure if there is no more pages
+                // {"code":"rest_post_invalid_page_number","message":"The page number requested is larger than the number of pages available.","data":{"status":400}}
+                var parsed =  JSONObject(resBody);
+                if(parsed.getString("code") == "rest_post_invalid_page_number") {
+                    errorHanlder.msg = parsed.toString()
+                    errorHanlder.type = ErrorType.NoHeadlines
+                } else {
+                    errorHanlder.msg = "Unexpected Responsen: " + parsed.toString()
+                    errorHanlder.type = ErrorType.Extension
+                }
+                return null;
             } catch(e : Exception) { }
 
             val jo : JSONObject = JSONObject("{DATA: $resBody }");
@@ -77,7 +87,9 @@ class S2JNews : ExtensionAbstract {
             }
         }        
         catch(e : Exception) { 
-            println("Error: " + e)
+            errorHanlder.msg =  e.message.toString()
+            errorHanlder.type = ErrorType.Extension
+            return null
         }
         
         return  list;
@@ -89,6 +101,8 @@ class S2JNews : ExtensionAbstract {
         try {
             res  =   S2JNews.request(url)
             if(res == null || res.body == null) {
+                errorHanlder.msg = "Network Error"
+                errorHanlder.type = ErrorType.Network
                 return null
             }
 
@@ -131,7 +145,8 @@ class S2JNews : ExtensionAbstract {
             }
 
         } catch(e : Exception) {
-            println("Error: " + e)
+            errorHanlder.msg = e.message.toString()
+            errorHanlder.type = ErrorType.Extension
             return null
         } 
 
@@ -146,14 +161,17 @@ class S2JNews : ExtensionAbstract {
         try {
             res  =   S2JNews.request("https://s2jnews.com/wp-json/wp/v2/posts")
             if(res == null || res.body == null) {
+                errorHanlder.msg = "Network Error"
+                errorHanlder.type = ErrorType.Network
                 return null
             }        
 
             var resBody : String = res.body?.string().toString();
             try {
-                // if its parsed then there is a problem, its the server returning a error 
                 JSONObject(resBody);
-                return list;
+                errorHanlder.msg = "Failed to parse homepage, wrong format got: " + resBody.toString()
+                errorHanlder.type = ErrorType.Extension
+                return null                
             } catch(e : Exception) { }
 
             val jo : JSONObject = JSONObject("{DATA: $resBody }");
@@ -168,7 +186,9 @@ class S2JNews : ExtensionAbstract {
             }
         }        
         catch(e : Exception) { 
-            println("Error: " + e)
+            errorHanlder.msg = e.message.toString()
+            errorHanlder.type = ErrorType.Extension
+            return null
         }
         return  list;
     }

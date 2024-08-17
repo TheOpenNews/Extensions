@@ -105,7 +105,6 @@ class NewsData() {
         }
         out.put("related",jsonRelated)
     
-    
         return  out
     }
 
@@ -114,16 +113,32 @@ class NewsData() {
     }
 }
 
+enum class ErrorType(val type : String) {
+    Network("Network"),
+    NoHeadlines("NoHeadlines"),
+    Extension("Extension"),
+    None("None"),
+}
+class ErrorHandler {
+    var msg : String = ""
+    var type : ErrorType = ErrorType.None
+    fun toJson() : HashMap<String,Any>{
+        val out : HashMap<String,Any>  = HashMap()
+        out.put("msg",msg)
+        out.put("type",type.name)
+        return  out
+    }
+
+}
 
 abstract class ExtensionAbstract {
-    var categories : ArrayList<String> = ArrayList();
+    var categories : ArrayList<String> = ArrayList()
+    var errorHanlder : ErrorHandler = ErrorHandler()
     var version : String = "1.0.0";
     var iconLink : String = "placeholder.png";
 
     abstract  fun loadNewsHeadlines(type : String, count : Int, page : Int) : ArrayList<NewsCard>?
-    open fun scrapeHomePage() :  ArrayList<NewsCard>? {
-        return ArrayList();
-    }
+    open fun scrapeHomePage() :  ArrayList<NewsCard>? { return ArrayList(); }
     abstract  fun scrapeUrl(url: String) : NewsData?
 }
 
