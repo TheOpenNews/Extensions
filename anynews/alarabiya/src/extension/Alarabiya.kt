@@ -20,19 +20,17 @@ class Alarabiya : ExtensionAbstract {
         iconLink = "alarabiya.jpg";
 
 
-        categoryToLink.put("Latest", "https://www.alarabiya.net/latest-news/archive")
-        categoryToLink.put("Saudi Today", "https://www.alarabiya.net/saudi-today/archive")
+        categoryToLink.put("Saudi Today", "https://www.al1arabiya.net/saudi-today/archive")
         categoryToLink.put("Aswaq", "https://www.alarabiya.net/aswaq/archive")
         categoryToLink.put("Sport", "https://www.alarabiya.net/sport/archive")
         categoryToLink.put("Variety", "https://www.alarabiya.net/variety/archive")
         categoryToLink.put("Latest General", "https://www.alarabiya.net/last-page/archive")
 
-        categories.add("Latest")
+        categories.add("Latest General")
         categories.add("Saudi Today")
         categories.add("Aswaq")
         categories.add("Sport")
         categories.add("Variety")
-        categories.add("Latest General")
     }
     companion object {
         fun request(url : String) : Response? {
@@ -62,8 +60,12 @@ class Alarabiya : ExtensionAbstract {
             }
             val resBody : String = res.body?.string()!!
             val doc : Document = Jsoup.parse(resBody)
-    
-            val elems : Elements = doc.select(".latest_element")
+            
+
+            var elems : Elements = doc.select(".list-item")
+            if(elems.size == 0) {
+                elems = doc.select(".latest_element")
+            }
             for(elem in elems) {
                 val title : String = elem.select(".latest_link").attr("title") 
                 val date : String =   elem.select(".caption").text()
