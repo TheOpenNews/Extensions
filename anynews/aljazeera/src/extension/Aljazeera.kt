@@ -16,6 +16,7 @@ import java.util.ArrayList
 class Aljazeera : ExtensionAbstract {
     var categoryMap: HashMap<String, (Int, Int) -> String> = HashMap()
     val ALJAZEERA_LINK : String = "https://www.aljazeera.com"
+    val IMG_RESIZE_OPTIONS_HEADLINES = "?resize=200,133&quality=50"
     constructor() {
         iconLink = "aljazeera.png";
 
@@ -79,7 +80,7 @@ class Aljazeera : ExtensionAbstract {
                 val o : JSONObject = articles.getJSONObject(i)
                 val title : String = o.getString("title")
                 val date : String = o.getString("date")
-                val imgURL : String = ALJAZEERA_LINK + o.getJSONObject("featuredImage").getString("sourceUrl")
+                val imgURL : String = ALJAZEERA_LINK + o.getJSONObject("featuredImage").getString("sourceUrl") + IMG_RESIZE_OPTIONS_HEADLINES
                 val link : String = ALJAZEERA_LINK + o.getString("link")
                 val description : String = o.getString("replacementHeadline")
                 list.add(NewsCard(title, date, imgURL, link))
