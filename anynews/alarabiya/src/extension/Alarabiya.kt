@@ -14,6 +14,8 @@ import java.util.ArrayList
 
 class Alarabiya : ExtensionAbstract {
     var categoryToLink : HashMap<String,String> = HashMap()
+
+    // https://vid.alarabiya.net/images/2024/08/20/8f906da9-1a33-4bd8-81c9-0e582f5f58b3/8f906da9-1a33-4bd8-81c9-0e582f5f58b3_16x9_600x338.jpeg?width=,
     constructor() {
         iconLink = "alarabiya.jpg";
 
@@ -53,6 +55,9 @@ class Alarabiya : ExtensionAbstract {
         try {
             res  = Alarabiya.request(categoryToLink.get(type)!! + "?pageNo=${Math.max(offset, 1)}")
             if(res == null || res.body == null) {
+                errorHanlder.msg =  "res == null || res.body == null"
+                errorHanlder.type = ErrorType.Network
+                println("Alarabiya Error: " + "res == null || res.body == null")
                 return null
             }
             val resBody : String = res.body?.string()!!
@@ -62,12 +67,15 @@ class Alarabiya : ExtensionAbstract {
             for(elem in elems) {
                 val title : String = elem.select(".latest_link").attr("title") 
                 val date : String =   elem.select("services caption").text()
-                val imgURL : String = elem.select(".latest_img img").attr("src")
+                var imgURL : String = elem.select(".latest_img img").attr("src")
+                imgURL = imgURL.substring(0,(imgURL.indexOf("width=") + "width=".length)) + "200&format=jpg"
                 val link : String = elem.select(".latest_link").attr("href") 
                 list.add(NewsCard(title, date, imgURL, link))
             } 
         } catch(e : Exception) {
-            println("Error: " + e)
+            errorHanlder.msg =  e.message.toString()
+            errorHanlder.type = ErrorType.Network
+            println("Alarabiya Error: " + e)
             return null
         } 
         return list
@@ -80,6 +88,9 @@ class Alarabiya : ExtensionAbstract {
         try {
             res  = Alarabiya.request(url)
             if(res == null || res.body == null) {
+                errorHanlder.msg =  "res == null || res.body == null"
+                errorHanlder.type = ErrorType.Network
+                println("Alarabiya Error: " + "res == null || res.body == null")
                 return null
             }
         
@@ -111,7 +122,6 @@ class Alarabiya : ExtensionAbstract {
                 }
 
                 if(value.metadata.keys.size == 0) continue
-                println(value)
                 data.content.add(value)
             }   
 
@@ -125,7 +135,9 @@ class Alarabiya : ExtensionAbstract {
                 ))
             }
         } catch(e : Exception) {
-            println("Error: " + e)
+            errorHanlder.msg =  e.message.toString()
+            errorHanlder.type = ErrorType.Network
+            println("Alarabiya Error: " + e.message)
             return null
         } 
 
