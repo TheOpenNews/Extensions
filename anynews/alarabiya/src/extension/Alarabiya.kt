@@ -69,7 +69,7 @@ class Alarabiya : ExtensionAbstract {
             for(elem in elems) {
                 val title : String = elem.select(".latest_link").attr("title") 
                 val date : String =   elem.select(".caption").text()
-                var imgURL : String = elem.select(".latest_img img").attr("src")
+                var imgURL : String = elem.select("img").attr("src")
                 imgURL = imgURL.substring(0,(imgURL.indexOf("width=") + "width=".length)) + "200&format=jpg"
                 val link : String = elem.select(".latest_link").attr("href") 
                 list.add(NewsCard(title, date, imgURL, link))
@@ -150,7 +150,7 @@ class Alarabiya : ExtensionAbstract {
 
 fun main() {
     val ext: Alarabiya = Alarabiya()
-    println(ext.loadNewsHeadlines("Latest", 0, 0))
+    println(ext.loadNewsHeadlines("Aswaq", 5, 0))
     // println(ext.scrapeUrl("https://www.alarabiya.net/arab-and-world/2024/08/11/%D8%B1%D9%88%D8%B3%D9%8A%D8%A7-%D8%AA%D8%AA%D9%88%D8%B9%D8%AF-%D8%A3%D9%88%D9%83%D8%B1%D8%A7%D9%86%D9%8A%D8%A7-%D8%A8%D9%80-%D8%B1%D8%AF-%D9%82%D8%A7%D8%B3-%D9%84%D9%86-%D9%8A%D8%AA%D8%A3%D8%AE%D8%B1-"))
 }
 
