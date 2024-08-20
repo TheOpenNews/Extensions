@@ -66,7 +66,7 @@ class Alarabiya : ExtensionAbstract {
             val elems : Elements = doc.select(".latest_element")
             for(elem in elems) {
                 val title : String = elem.select(".latest_link").attr("title") 
-                val date : String =   elem.select("services caption").text()
+                val date : String =   elem.select("caption").text()
                 var imgURL : String = elem.select(".latest_img img").attr("src")
                 imgURL = imgURL.substring(0,(imgURL.indexOf("width=") + "width=".length)) + "200&format=jpg"
                 val link : String = elem.select(".latest_link").attr("href") 
