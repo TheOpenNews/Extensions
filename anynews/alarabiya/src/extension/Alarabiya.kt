@@ -20,7 +20,7 @@ class Alarabiya : ExtensionAbstract {
         iconLink = "alarabiya.jpg";
 
 
-        categoryToLink.put("Saudi Today", "https://www.al1arabiya.net/saudi-today/archive")
+        categoryToLink.put("Saudi Today", "https://www.alarabiya.net/saudi-today/archive")
         categoryToLink.put("Aswaq", "https://www.alarabiya.net/aswaq/archive")
         categoryToLink.put("Sport", "https://www.alarabiya.net/sport/archive")
         categoryToLink.put("Variety", "https://www.alarabiya.net/variety/archive")
