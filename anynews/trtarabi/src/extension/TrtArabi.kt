@@ -22,6 +22,8 @@ import java.util.ArrayList
 class TrtArabi : ExtensionAbstract {
     val TRTARABI_NEWS : String = "https://www.trtarabi.com/"
     val SCRAP_PREFIX : String = "https://www.trtarabi.com/api/content?path="
+    val IMG_RESIZE_LINK_200 = "https://mguot2nqx9.execute-api.eu-west-1.amazonaws.com/default/r/trtarabi/w200/q40/"
+    val IMG_RESIZE_LINK_500 = "https://mguot2nqx9.execute-api.eu-west-1.amazonaws.com/default/r/trtarabi/w500/q60/"
     constructor() {
         iconLink = "trtarabi.jpg";
 
@@ -66,11 +68,14 @@ class TrtArabi : ExtensionAbstract {
                 val o : JSONObject = articles.getJSONObject(i)
                 val title : String = o.getString("title")
                 val date : String = o.getString("publishedDate")
-                val imgURL : String = o.getString("mainImageUrl")
+                var imgURL : String = o.getString("mainImageUrl")
+                imgURL = IMG_RESIZE_LINK_200 + imgURL.substring(imgURL.indexOf("/trtarabi/") + "/trtarabi/".length)
+
                 val link : String = o.getString("path")
                 list.add(NewsCard(title, date, imgURL, link))
             }            
         } catch(e : Exception) {
+            println("TrtArabi loadNewsHeadlines Error: " + e.message);
             return null
         } 
         return list
@@ -82,7 +87,8 @@ class TrtArabi : ExtensionAbstract {
         try {
             res  =   TrtArabi.request(SCRAP_PREFIX + url)
             if(res == null || res.body == null) {
-                return null
+            println("TrtArabi loadNewsHeadlines Error: null response");
+            return null
             }
 
             val resBody : String = res.body!!.string()
@@ -128,6 +134,7 @@ class TrtArabi : ExtensionAbstract {
         }
 
     } catch(e : Exception) {
+            println("TrtArabi loadNewsHeadlines Error: " + e.message);
         return null
     } 
 
@@ -137,7 +144,7 @@ class TrtArabi : ExtensionAbstract {
 
 fun main() {
     val ext: TrtArabi = TrtArabi()
-    // ext.loadNewsHeadlines("explainers", 5, 0)
-    println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
+    println(ext.loadNewsHeadlines("now", 5, 0))
+    //println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
 }
 
