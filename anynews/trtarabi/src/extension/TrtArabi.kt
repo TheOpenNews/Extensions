@@ -22,7 +22,7 @@ import java.util.ArrayList
 class TrtArabi : ExtensionAbstract {
     val TRTARABI_NEWS : String = "https://www.trtarabi.com/"
     val SCRAP_PREFIX : String = "https://www.trtarabi.com/api/content?path="
-    val IMG_RESIZE_LINK_200 = "https://mguot2nqx9.execute-api.eu-west-1.amazonaws.com/default/r/trtarabi/w100/q50/"
+    val IMG_RESIZE_LINK_200 = "https://mguot2nqx9.execute-api.eu-west-1.amazonaws.com/default/r/trtarabi/w150/q40/"
     val IMG_RESIZE_LINK_500 = "https://mguot2nqx9.execute-api.eu-west-1.amazonaws.com/default/r/trtarabi/w500/q60/"
     constructor() {
         iconLink = "trtarabi.jpg";
