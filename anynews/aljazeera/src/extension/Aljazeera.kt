@@ -70,6 +70,8 @@ class Aljazeera : ExtensionAbstract {
         try {
             res  =   Aljazeera.request(categoryMap.get(type)!!(count,count * page))
             if(res == null || res.body == null) {
+                errorHanlder.msg = "got a null for response or body"
+                errorHanlder.type = ErrorType.Network
                 return null
             }
 
@@ -87,6 +89,9 @@ class Aljazeera : ExtensionAbstract {
             }
     
         } catch(e : Exception) {
+            errorHanlder.msg =  e.message.toString()
+            errorHanlder.type = ErrorType.Network
+            println("Aljazzera Error: " + e)
             return null
         } 
         return list
@@ -99,6 +104,8 @@ class Aljazeera : ExtensionAbstract {
         try {
             res  =   Aljazeera.request(url)
             if(res == null || res.body == null) {
+                errorHanlder.msg = "got a null for response or body"
+                errorHanlder.type = ErrorType.Network
                 return null
             }
 
@@ -147,11 +154,15 @@ class Aljazeera : ExtensionAbstract {
                     data.related.add(NewsCard(title, "", imgURL, link))
                 }                
             } catch(e : Exception) {
-                println("Error: " + e)
+                println("Aljazzera Error: " + e)
+
+
             }
         } catch(e : Exception) {
-                println("Error: " + e)
-                return null
+            errorHanlder.msg =  e.message.toString()
+            errorHanlder.type = ErrorType.Network
+            println("Aljazzera Error: " + e)
+            return null
         } 
 
 
