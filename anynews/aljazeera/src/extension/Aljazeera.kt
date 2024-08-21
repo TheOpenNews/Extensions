@@ -171,6 +171,8 @@ class Aljazeera : ExtensionAbstract {
     }
 }
 
+// aljazzera extension errros, some pages have specific scrapper 
+
 fun main() {
     val ext: Aljazeera = Aljazeera()
     // var headlines = ext.loadNewsHeadlines("Sport", 5, 0)

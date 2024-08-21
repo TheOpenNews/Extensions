@@ -14,6 +14,8 @@ import java.util.ArrayList
 
 class Alarabiya : ExtensionAbstract {
     var categoryToLink : HashMap<String,String> = HashMap()
+    val LINK_PREFIX : String = "https://www.alarabiya.net"
+    
 
     // https://vid.alarabiya.net/images/2024/08/20/8f906da9-1a33-4bd8-81c9-0e582f5f58b3/8f906da9-1a33-4bd8-81c9-0e582f5f58b3_16x9_600x338.jpeg?width=,
     constructor() {
@@ -88,7 +90,7 @@ class Alarabiya : ExtensionAbstract {
         var data : NewsData =  NewsData()
 
         try {
-            res  = Alarabiya.request(url)
+            res  = Alarabiya.request(LINK_PREFIX + url)
             if(res == null || res.body == null) {
                 errorHanlder.msg =  "res == null || res.body == null"
                 errorHanlder.type = ErrorType.Network
