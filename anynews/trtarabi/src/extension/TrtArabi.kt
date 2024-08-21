@@ -84,7 +84,8 @@ class TrtArabi : ExtensionAbstract {
     override fun scrapeUrl(url: String): NewsData? {
         val res :  Response?
         val data :  NewsData= NewsData()
-        try {
+        println(SCRAP_PREFIX + url)
+            try {
             println(SCRAP_PREFIX + url)
             res  =   TrtArabi.request(SCRAP_PREFIX + url)
             if(res == null || res.body == null) {
@@ -145,7 +146,7 @@ class TrtArabi : ExtensionAbstract {
 
 fun main() {
     val ext: TrtArabi = TrtArabi()
-    // println(ext.loadNewsHeadlines("now", 5, 0))
-    println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
+    val headlines =  ext.loadNewsHeadlines("now", 5, 0)
+    println(ext.scrapeUrl(headlines!!.get(0).link))
 }
 
