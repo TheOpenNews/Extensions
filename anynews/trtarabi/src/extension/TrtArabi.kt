@@ -85,6 +85,7 @@ class TrtArabi : ExtensionAbstract {
         val res :  Response?
         val data :  NewsData= NewsData()
         try {
+            println(SCRAP_PREFIX + url)
             res  =   TrtArabi.request(SCRAP_PREFIX + url)
             if(res == null || res.body == null) {
             println("TrtArabi loadNewsHeadlines Error: null response");
@@ -144,7 +145,7 @@ class TrtArabi : ExtensionAbstract {
 
 fun main() {
     val ext: TrtArabi = TrtArabi()
-    println(ext.loadNewsHeadlines("now", 5, 0))
-    //println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
+    // println(ext.loadNewsHeadlines("now", 5, 0))
+    println(ext.scrapeUrl("/explainers/قوة-الدبلوماسية-التركية-كيف-أسهمت-أنقرة-بتبادل-السجناء-بين-روسيا-والغرب-18190838"))
 }
 
