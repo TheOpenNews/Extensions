@@ -21,17 +21,17 @@ class Aljazeera : ExtensionAbstract {
         iconLink = "aljazeera.png";
 
 
-        categoryMap.put("Israel palestine conflict",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"israel-palestine-conflict\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("US election",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-election-2024\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Sport",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"sports\",\"categoryType\":\"categories\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Opinion",{ _, _ -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoCuratedLandingPageQuery&variables={\"slug\":\"opinion\",\"postTypes\":[\"blog\",\"episode\",\"post\",\"opinion\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"preview\":\"\"}"})
-        categoryMap.put("Middle East",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"middle-east\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Africa",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"africa\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Asia Pacific",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoTopicsFeedQuery&variables={\"slug\":\"asia-pacific\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Europe",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"europe\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Latin America",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"latin-america\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Canada & US",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-canada\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
-        categoryMap.put("Asia",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"asia\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Israel palestine conflict",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"israel-palestine-conflict\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("US election",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-election-2024\",\"categoryType\":\"tags\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Sport",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"sports\",\"categoryType\":\"categories\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Opinion",{ _, _ -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoCuratedLandingPageQuery&variables={\"slug\":\"opinion\",\"postTypes\":[\"blog\",\"episode\",\"post\",\"opinion\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"preview\":\"\"}"})
+        categoryMap.put("Middle East",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"middle-east\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Africa",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"africa\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Asia Pacific",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoTopicsFeedQuery&variables={\"slug\":\"asia-pacific\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Europe",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"europe\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Latin America",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"latin-america\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Canada & US",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"us-canada\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
+        categoryMap.put("Asia",{ count, offset -> "https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoAjeSectionPostsQuery&variables={\"category\":\"asia\",\"categoryType\":\"where\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"quantity\":$count,\"offset\":$offset}"})
     
     
         categories.add("Israel palestine conflict")
@@ -68,6 +68,7 @@ class Aljazeera : ExtensionAbstract {
         val res :  Response?
         var list: ArrayList<NewsCard> = ArrayList<NewsCard>()
         try {
+            println(categoryMap.get(type)!!(count,count * page));
             res  =   Aljazeera.request(categoryMap.get(type)!!(count,count * page))
             if(res == null || res.body == null) {
                 errorHanlder.msg = "got a null for response or body"
@@ -141,7 +142,7 @@ class Aljazeera : ExtensionAbstract {
             }
 
             try {
-                val res  =  Aljazeera.request("https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoMoreFromTopic&variables={\"allPostTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"trendingCategory\":\"\",\"category\":\"news\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\",\"liveblog\"],\"currentPostType\":[\"post\"]}")
+                val res  =  Aljazeera.request("https://www.aljazeera.com/graphql?wp-site=aje&operationName=ArchipelagoMoreFromTopic&variables={\"allPostTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"trendingCategory\":\"\",\"category\":\"news\",\"postTypes\":[\"blog\",\"episode\",\"opinion\",\"post\",\"video\",\"external-article\",\"gallery\",\"podcast\",\"longform\"],\"currentPostType\":[\"post\"]}")
                 val jo  = JSONObject(res!!.body!!.string())
                 val arr = jo.optJSONObject("data").getJSONArray("mostRecent")
                 for(i in 0..arr.length()-1) {
@@ -171,7 +172,8 @@ class Aljazeera : ExtensionAbstract {
 }
 
 fun main() {
-    val news: Aljazeera = Aljazeera()
-    // news.loadNewsHeadlines("Sport", 5, 0)
-    println(news.scrapeUrl("https://www.aljazeera.com/news/2024/8/6/who-is-tim-walz-kamala-harriss-vp-pick-in-us-election"))
+    val ext: Aljazeera = Aljazeera()
+    // var headlines = ext.loadNewsHeadlines("Sport", 5, 0)
+    // println(headlines);
+    // println(ext.scrapeUrl("https://www.aljazeera.com/sports/liveblog/2024/8/18/live-chelsea-vs-manchester-city-english-premier-league-football-match"))
 }

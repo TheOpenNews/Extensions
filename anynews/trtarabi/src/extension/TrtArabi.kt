@@ -1,9 +1,3 @@
-
-
-
-
-
-
 package anynews.extension.trtarabi
 
 import anynews.extension.shared.*
@@ -135,12 +129,12 @@ class TrtArabi : ExtensionAbstract {
             data.related.add(NewsCard(title, date, imgURL, link))            
         }
 
-    } catch(e : Exception) {
-            println("TrtArabi loadNewsHeadlines Error: " + e.message);
-        return null
-    } 
+        } catch(e : Exception) {
+                println("TrtArabi loadNewsHeadlines Error: " + e.message);
+            return null
+        } 
 
-        return data
+            return data
     }
 }
 
